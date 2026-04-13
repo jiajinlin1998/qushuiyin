@@ -1,0 +1,44 @@
+<!--components/canvas-selector/canvas-selector.wxml-->
+<view class="canvas-selector">
+  <!-- 模式切换按钮 -->
+  <view class="mode-switcher">
+    <view 
+      class="mode-btn {{selectMode === 'rect' ? 'active' : ''}}" 
+      bindtap="switchToRect"
+    >
+      <text>矩形框选</text>
+    </view>
+    <view 
+      class="mode-btn {{selectMode === 'free' ? 'active' : ''}}" 
+      bindtap="switchToFree"
+    >
+      <text>自由涂抹</text>
+    </view>
+  </view>
+
+  <!-- Canvas 容器 -->
+  <view class="canvas-container">
+    <canvas 
+      type="2d" 
+      id="selectorCanvas" 
+      class="selectorCanvas"
+      bindtouchstart="onTouchStart"
+      bindtouchmove="onTouchMove"
+      bindtouchend="onTouchEnd"
+      disable-scroll="{{true}}"
+    ></canvas>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="action-buttons">
+    <view class="action-btn cancel-btn" bindtap="clearSelection">
+      <text>清除选择</text>
+    </view>
+    <view class="action-btn undo-btn" bindtap="undoSelection" wx:if="{{selectionHistory.length > 0}}">
+      <text>撤销</text>
+    </view>
+    <view class="action-btn confirm-btn" bindtap="confirmSelection" wx:if="{{hasSelection}}">
+      <text>确认选择</text>
+    </view>
+  </view>
+</view>

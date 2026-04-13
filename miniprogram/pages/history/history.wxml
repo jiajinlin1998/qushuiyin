@@ -1,0 +1,28 @@
+<!--pages/history/history.wxml-->
+<view class="container">
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{historyList.length === 0}}">
+    <image src="/assets/icons/empty.png" mode="aspectFit" class="empty-icon"></image>
+    <text class="empty-text">暂无历史记录</text>
+    <text class="empty-tip">处理图片后会自动保存到这里</text>
+  </view>
+
+  <!-- 历史记录列表 -->
+  <view class="history-list" wx:if="{{historyList.length > 0}}">
+    <view class="history-item" wx:for="{{historyList}}" wx:key="id" bindtap="viewDetail" data-id="{{item.id}}">
+      <image class="history-thumb" src="{{item.processedPath}}" mode="aspectFill"></image>
+      <view class="history-info">
+        <text class="history-time">{{item.createTime}}</text>
+        <text class="history-type">{{item.type === 'image' ? '图片去水印' : '视频去水印'}}</text>
+      </view>
+      <view class="history-delete" catchtap="deleteRecord" data-id="{{item.id}}">
+        <text>🗑️</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 清空按钮 -->
+  <view class="clear-btn" wx:if="{{historyList.length > 0}}" bindtap="clearAll">
+    <text>清空历史记录</text>
+  </view>
+</view>

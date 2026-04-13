@@ -1,0 +1,7 @@
+{
+  "usingComponents": {
+    "canvas-selector": "/components/canvas-selector/canvas-selector",
+    "image-compare": "/components/image-compare/image-compare"
+  },
+  "navigationBarTitleText": "图片去水印"
+}

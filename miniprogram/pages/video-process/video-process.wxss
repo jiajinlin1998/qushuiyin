@@ -1,0 +1,79 @@
+/* pages/video-process/video-process.wxss */
+
+.container {
+  padding: 20rpx;
+}
+
+.video-container {
+  margin-bottom: 30rpx;
+}
+
+.tip-card {
+  background-color: #fff7e6;
+  border-left: 6rpx solid #faad14;
+  padding: 24rpx;
+  border-radius: 12rpx;
+  margin-bottom: 30rpx;
+  display: flex;
+  align-items: center;
+}
+
+.tip-icon {
+  font-size: 32rpx;
+  margin-right: 16rpx;
+}
+
+.tip-text {
+  flex: 1;
+  font-size: 24rpx;
+  color: #666666;
+  line-height: 1.5;
+}
+
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.action-buttons button {
+  margin: 0;
+}
+
+/* 进度条 */
+.progress-section {
+  margin-top: 40rpx;
+  padding: 30rpx;
+  background-color: #ffffff;
+  border-radius: 12rpx;
+}
+
+.progress-title {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #333333;
+  margin-bottom: 20rpx;
+  text-align: center;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 20rpx;
+  background-color: #f0f0f0;
+  border-radius: 10rpx;
+  overflow: hidden;
+  margin-bottom: 16rpx;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4A90E2, #5BA3F5);
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  display: block;
+  text-align: center;
+  font-size: 24rpx;
+  color: #999999;
+}

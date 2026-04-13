@@ -1,0 +1,88 @@
+/* pages/tutorial/tutorial.wxss */
+
+.container {
+  padding: 20rpx;
+}
+
+.tutorial-card {
+  background-color: #ffffff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.tutorial-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333333;
+  margin-bottom: 30rpx;
+  padding-left: 10rpx;
+  border-left: 6rpx solid #4A90E2;
+}
+
+.step-list {
+  display: flex;
+  flex-direction: column;
+  gap: 30rpx;
+}
+
+.step-item {
+  display: flex;
+  align-items: flex-start;
+}
+
+.step-number {
+  width: 50rpx;
+  height: 50rpx;
+  background-color: #4A90E2;
+  color: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24rpx;
+  font-weight: bold;
+  margin-right: 20rpx;
+  flex-shrink: 0;
+}
+
+.step-content {
+  flex: 1;
+}
+
+.step-title {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #333333;
+  margin-bottom: 8rpx;
+}
+
+.step-desc {
+  font-size: 24rpx;
+  color: #666666;
+  line-height: 1.5;
+}
+
+/* 提示卡片 */
+.tip-card {
+  background-color: #fff7e6;
+  border-left: 6rpx solid #faad14;
+  padding: 30rpx;
+  border-radius: 12rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.tip-title {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #333333;
+}
+
+.tip-desc {
+  font-size: 24rpx;
+  color: #666666;
+  line-height: 1.6;
+}

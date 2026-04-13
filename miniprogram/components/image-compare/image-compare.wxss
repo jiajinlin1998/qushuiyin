@@ -1,0 +1,103 @@
+/* components/image-compare/image-compare.wxss */
+
+.image-compare {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.compare-container {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 12rpx;
+}
+
+.slider-container {
+  position: relative;
+  width: 100%;
+  height: 600rpx;
+  overflow: hidden;
+}
+
+.compare-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.compare-image.original {
+  z-index: 1;
+}
+
+.compare-image.processed {
+  z-index: 2;
+}
+
+/* 滑动指示器 */
+.slider-indicator {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 4rpx;
+  background-color: #ffffff;
+  z-index: 10;
+  box-shadow: 0 0 10rpx rgba(0, 0, 0, 0.5);
+}
+
+.slider-line {
+  width: 100%;
+  height: 100%;
+  background-color: #ffffff;
+}
+
+.slider-handle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60rpx;
+  height: 60rpx;
+  background-color: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.3);
+}
+
+.slider-icon {
+  font-size: 32rpx;
+  color: #4A90E2;
+}
+
+/* 标签 */
+.label {
+  position: absolute;
+  bottom: 20rpx;
+  padding: 8rpx 20rpx;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: #ffffff;
+  font-size: 24rpx;
+  border-radius: 50rpx;
+  z-index: 5;
+}
+
+.original-label {
+  left: 20rpx;
+}
+
+.processed-label {
+  right: 20rpx;
+}
+
+/* 提示 */
+.compare-tip {
+  margin-top: 20rpx;
+  text-align: center;
+  color: #999999;
+  font-size: 24rpx;
+}

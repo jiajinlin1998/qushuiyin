@@ -1,0 +1,101 @@
+<!--pages/index/index.wxml-->
+<view class="container">
+  <!-- 头部Banner -->
+  <view class="header">
+    <text class="header-title">去水印助手</text>
+    <text class="header-subtitle">一键去除图片/视频水印，简单高效</text>
+  </view>
+
+  <!-- 快速上传区域 -->
+  <view class="upload-section">
+    <view class="section-title">开始使用</view>
+    <view class="upload-buttons">
+      <!-- 图片上传 -->
+      <view class="upload-btn" bindtap="chooseImageUpload">
+        <image class="upload-btn-icon" src="/assets/icons/image.png" mode="aspectFit" />
+        <text class="upload-btn-text">图片去水印</text>
+      </view>
+      
+      <!-- 视频上传 -->
+      <view class="upload-btn" bindtap="chooseVideoUpload">
+        <image class="upload-btn-icon" src="/assets/icons/video.png" mode="aspectFit" />
+        <text class="upload-btn-text">视频去水印</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 功能介绍 -->
+  <view class="feature-section">
+    <view class="section-title">核心功能</view>
+    <view class="feature-cards">
+      <view class="feature-card">
+        <image class="feature-icon" src="/assets/icons/select.png" mode="aspectFit" />
+        <view class="card-title">智能框选</view>
+        <view class="card-desc">矩形/涂抹自由选择水印</view>
+      </view>
+      
+      <view class="feature-card">
+        <image class="feature-icon" src="/assets/icons/magic.png" mode="aspectFit" />
+        <view class="card-title">像素修复</view>
+        <view class="card-desc">邻域插值智能修复</view>
+      </view>
+      
+      <view class="feature-card">
+        <image class="feature-icon" src="/assets/icons/preview.png" mode="aspectFit" />
+        <view class="card-title">对比预览</view>
+        <view class="card-desc">处理前后对比查看</view>
+      </view>
+      
+      <view class="feature-card">
+        <image class="feature-icon" src="/assets/icons/save.png" mode="aspectFit" />
+        <view class="card-title">保存分享</view>
+        <view class="card-desc">一键保存到相册</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 产品介绍 -->
+  <view class="intro-section">
+    <view class="intro-card">
+      <view class="section-title">使用说明</view>
+      <view class="intro-list">
+        <view class="intro-item">
+          <image class="intro-item-icon" src="/assets/icons/step1.png" mode="aspectFit" />
+          <view class="intro-item-content">
+            <view class="intro-item-title">1. 上传图片</view>
+            <view class="intro-item-desc">从相册选择或拍照上传需要处理的图片</view>
+          </view>
+        </view>
+        
+        <view class="intro-item">
+          <image class="intro-item-icon" src="/assets/icons/step2.png" mode="aspectFit" />
+          <view class="intro-item-content">
+            <view class="intro-item-title">2. 框选水印</view>
+            <view class="intro-item-desc">使用矩形框选或涂抹工具选择水印区域</view>
+          </view>
+        </view>
+        
+        <view class="intro-item">
+          <image class="intro-item-icon" src="/assets/icons/step3.png" mode="aspectFit" />
+          <view class="intro-item-content">
+            <view class="intro-item-title">3. 一键处理</view>
+            <view class="intro-item-desc">智能算法自动修复水印区域</view>
+          </view>
+        </view>
+        
+        <view class="intro-item">
+          <image class="intro-item-icon" src="/assets/icons/step4.png" mode="aspectFit" />
+          <view class="intro-item-content">
+            <view class="intro-item-title">4. 保存结果</view>
+            <view class="intro-item-desc">预览满意后保存到相册</view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部提示 -->
+  <view class="footer-tip">
+    <text>支持常见图片格式，水印类型越简单效果越好</text>
+  </view>
+</view>

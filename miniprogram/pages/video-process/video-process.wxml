@@ -1,0 +1,40 @@
+<!--pages/video-process/video-process.wxml-->
+<view class="container">
+  <view class="video-container">
+    <!-- 视频播放器 -->
+    <video 
+      id="videoPlayer"
+      src="{{videoPath}}"
+      controls
+      enable-progress-gesture
+      show-center-play-btn
+      object-fit="contain"
+      style="width: 100%; height: 500rpx;"
+    ></video>
+  </view>
+
+  <!-- 水印区域选择提示 -->
+  <view class="tip-card">
+    <text class="tip-icon">📹</text>
+    <text class="tip-text">播放视频，找到水印位置后，框选水印区域</text>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="action-buttons">
+    <button class="btn-primary" bindtap="selectWatermarkArea">
+      <text>框选水印区域</text>
+    </button>
+    <button class="btn-secondary" bindtap="processVideo" wx:if="{{hasSelection}}">
+      <text>开始处理</text>
+    </button>
+  </view>
+
+  <!-- 处理进度 -->
+  <view class="progress-section" wx:if="{{processing}}">
+    <view class="progress-title">视频处理中</view>
+    <view class="progress-bar">
+      <view class="progress-fill" style="width: {{progress}}%"></view>
+    </view>
+    <text class="progress-text">{{progress}}%</text>
+  </view>
+</view>

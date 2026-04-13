@@ -1,0 +1,39 @@
+<!--components/image-compare/image-compare.wxml-->
+<view class="image-compare">
+  <view class="compare-container">
+    <!-- 滑动条 -->
+    <view class="slider-container" bindtouchmove="onSliderMove" bindtouchend="onSliderEnd">
+      <!-- 原图 -->
+      <image 
+        class="compare-image original" 
+        src="{{originalImage}}" 
+        mode="aspectFit"
+      ></image>
+      
+      <!-- 处理后图片 -->
+      <image 
+        class="compare-image processed" 
+        src="{{processedImage}}" 
+        mode="aspectFit"
+        style="clip-path: inset(0 0 0 {{sliderPosition}}%)"
+      ></image>
+      
+      <!-- 滑动指示器 -->
+      <view class="slider-indicator" style="left: {{sliderPosition}}%">
+        <view class="slider-line"></view>
+        <view class="slider-handle">
+          <text class="slider-icon">⇄</text>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 标签 -->
+    <view class="label original-label">原图</view>
+    <view class="label processed-label">处理后</view>
+  </view>
+  
+  <!-- 提示 -->
+  <view class="compare-tip">
+    <text>左右滑动对比处理效果</text>
+  </view>
+</view>

@@ -1,0 +1,70 @@
+<!--pages/image-process/image-process.wxml-->
+<view class="container">
+  <!-- 步骤指示器 -->
+  <view class="step-indicator">
+    <view class="step {{currentStep >= 1 ? 'active' : ''}}">
+      <view class="step-number">1</view>
+      <text class="step-text">框选水印</text>
+    </view>
+    <view class="step-line {{currentStep >= 2 ? 'active' : ''}}"></view>
+    <view class="step {{currentStep >= 2 ? 'active' : ''}}">
+      <view class="step-number">2</view>
+      <text class="step-text">处理图片</text>
+    </view>
+    <view class="step-line {{currentStep >= 3 ? 'active' : ''}}"></view>
+    <view class="step {{currentStep >= 3 ? 'active' : ''}}">
+      <view class="step-number">3</view>
+      <text class="step-text">预览保存</text>
+    </view>
+  </view>
+
+  <!-- 步骤1：框选水印 -->
+  <view class="step-content" wx:if="{{currentStep === 1}}">
+    <view class="step-title">请框选图片中的水印区域</view>
+    
+    <!-- Canvas框选组件 -->
+    <canvas-selector 
+      imagePath="{{imagePath}}"
+      bind:selectionconfirmed="onSelectionConfirmed"
+      bind:selectioncleared="onSelectionCleared"
+    ></canvas-selector>
+    
+    <!-- 提示信息 -->
+    <view class="tip-card">
+      <text class="tip-icon">💡</text>
+      <text class="tip-text">支持矩形框选和自由涂抹，尽量选择完整的水印区域</text>
+    </view>
+  </view>
+
+  <!-- 步骤2：处理图片 -->
+  <view class="step-content" wx:if="{{currentStep === 2}}">
+    <view class="processing-container">
+      <view class="processing-animation">
+        <view class="loading-spinner"></view>
+        <text class="processing-text">正在处理图片...</text>
+        <text class="processing-tip">智能修复水印区域，请稍候</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 步骤3：预览保存 -->
+  <view class="step-content" wx:if="{{currentStep === 3}}">
+    <view class="step-title">处理完成</view>
+    
+    <!-- 对比预览组件 -->
+    <image-compare 
+      originalImage="{{imagePath}}"
+      processedImage="{{processedImagePath}}"
+    ></image-compare>
+    
+    <!-- 操作按钮 -->
+    <view class="action-buttons">
+      <button class="btn-secondary" bindtap="reprocessImage">
+        <text>重新处理</text>
+      </button>
+      <button class="btn-primary" bindtap="saveToAlbum">
+        <text>保存到相册</text>
+      </button>
+    </view>
+  </view>
+</view>

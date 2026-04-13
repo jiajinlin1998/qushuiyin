@@ -1,0 +1,85 @@
+<!--pages/tutorial/tutorial.wxml-->
+<view class="container">
+  <view class="tutorial-card">
+    <view class="tutorial-title">图片去水印教程</view>
+    
+    <view class="step-list">
+      <view class="step-item">
+        <view class="step-number">1</view>
+        <view class="step-content">
+          <view class="step-title">上传图片</view>
+          <text class="step-desc">在首页点击"图片去水印"，选择相册中的图片或拍照上传</text>
+        </view>
+      </view>
+      
+      <view class="step-item">
+        <view class="step-number">2</view>
+        <view class="step-content">
+          <view class="step-title">框选水印</view>
+          <text class="step-desc">选择矩形框选或自由涂抹工具，框选图片中的水印区域</text>
+        </view>
+      </view>
+      
+      <view class="step-item">
+        <view class="step-number">3</view>
+        <view class="step-content">
+          <view class="step-title">确认处理</view>
+          <text class="step-desc">框选完成后，点击"确认选择"，系统会自动修复水印区域</text>
+        </view>
+      </view>
+      
+      <view class="step-item">
+        <view class="step-number">4</view>
+        <view class="step-content">
+          <view class="step-title">保存结果</view>
+          <text class="step-desc">处理完成后可对比效果，满意后点击"保存到相册"</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="tutorial-card">
+    <view class="tutorial-title">视频去水印教程</view>
+    
+    <view class="step-list">
+      <view class="step-item">
+        <view class="step-number">1</view>
+        <view class="step-content">
+          <view class="step-title">上传视频</view>
+          <text class="step-desc">在首页点击"视频去水印"，选择相册中的视频（限制15秒内，10MB以内）</text>
+        </view>
+      </view>
+      
+      <view class="step-item">
+        <view class="step-number">2</view>
+        <view class="step-content">
+          <view class="step-title">定位水印</view>
+          <text class="step-desc">播放视频，找到水印出现的位置</text>
+        </view>
+      </view>
+      
+      <view class="step-item">
+        <view class="step-number">3</view>
+        <view class="step-content">
+          <view class="step-title">框选水印区域</view>
+          <text class="step-desc">在视频上框选水印位置，系统会逐帧处理</text>
+        </view>
+      </view>
+      
+      <view class="step-item">
+        <view class="step-number">4</view>
+        <view class="step-content">
+          <view class="step-title">等待处理</view>
+          <text class="step-desc">视频处理需要一定时间，请耐心等待</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="tip-card">
+    <view class="tip-title">💡 提示</view>
+    <text class="tip-desc">• 水印区域选择越精确，处理效果越好</text>
+    <text class="tip-desc">• 支持去除纯色文字、logo等简单水印</text>
+    <text class="tip-desc">• 复杂水印可能需要多次调整</text>
+  </view>
+</view>
