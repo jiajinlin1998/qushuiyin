@@ -203,13 +203,13 @@ function processFreeRegion(data, mask, canvasWidth, canvasHeight, selection, dpr
 
   let processedPixels = 0;
 
-  // 遍历包围盒
+  // 遍历包围盒，直接使用掩码判断（掩码生成时已包含多边形判断）
   for (let py = Math.max(0, Math.floor(minY)); py <= Math.min(canvasHeight - 1, Math.ceil(maxY)); py++) {
     for (let px = Math.max(0, Math.floor(minX)); px <= Math.min(canvasWidth - 1, Math.ceil(maxX)); px++) {
       const pixelIndex = py * canvasWidth + px;
       
-      // 判断点是否在多边形内且是水印区域
-      if (mask[pixelIndex] === 1 && isPointInPolygon({ x: px, y: py }, scaledPath)) {
+      // 直接检查掩码，无需重复判断多边形
+      if (mask[pixelIndex] === 1) {
         const dataIndex = pixelIndex * 4;
 
         // 计算邻域平均颜色（排除水印区域）

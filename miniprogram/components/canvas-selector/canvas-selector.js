@@ -354,30 +354,37 @@ Component({
       const offsetY = this.imageOffsetY;
       const convertedSelections = [];
 
-      console.log('坐标转换参数:', { scale, offsetX, offsetY });
+      // 计算图片原始尺寸
+      const imgWidth = this.imageDrawWidth / scale;
+      const imgHeight = this.imageDrawHeight / scale;
+
+      console.log('坐标转换参数:', { scale, offsetX, offsetY, imgWidth, imgHeight });
 
       this.rectSelections.forEach(rect => {
         // Canvas逻辑坐标 -> 图片原始像素坐标
-        const x = Math.floor((rect.x - offsetX) / scale);
-        const y = Math.floor((rect.y - offsetY) / scale);
-        const w = Math.floor(rect.width / scale);
-        const h = Math.floor(rect.height / scale);
+        let x = Math.floor((rect.x - offsetX) / scale);
+        let y = Math.floor((rect.y - offsetY) / scale);
+        let w = Math.floor(rect.width / scale);
+        let h = Math.floor(rect.height / scale);
+
+        // 边界保护：确保不超出图片范围
+        x = Math.max(0, Math.min(x, imgWidth - 1));
+        y = Math.max(0, Math.min(y, imgHeight - 1));
+        w = Math.max(1, Math.min(w, imgWidth - x));
+        h = Math.max(1, Math.min(h, imgHeight - y));
 
         console.log(`矩形转换: Canvas(${rect.x}, ${rect.y}, ${rect.width}, ${rect.height}) -> 图片(${x}, ${y}, ${w}, ${h})`);
 
         convertedSelections.push({
           type: 'rect',
-          x: Math.max(0, x),
-          y: Math.max(0, y),
-          width: Math.max(1, w),
-          height: Math.max(1, h)
+          x, y, width: w, height: h
         });
       });
 
       this.freeSelections.forEach(path => {
         const convertedPath = path.map(point => ({
-          x: Math.max(0, Math.floor((point.x - offsetX) / scale)),
-          y: Math.max(0, Math.floor((point.y - offsetY) / scale))
+          x: Math.max(0, Math.min(Math.floor((point.x - offsetX) / scale), imgWidth - 1)),
+          y: Math.max(0, Math.min(Math.floor((point.y - offsetY) / scale), imgHeight - 1))
         }));
         convertedSelections.push({
           type: 'free',
