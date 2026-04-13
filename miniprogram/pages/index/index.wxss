@@ -56,6 +56,12 @@
   margin: 0 auto 20rpx;
 }
 
+.feature-icon-text {
+  font-size: 64rpx;
+  margin-bottom: 16rpx;
+  text-align: center;
+}
+
 .feature-card .card-title {
   font-size: 30rpx;
   font-weight: 500;
@@ -101,10 +107,14 @@
   border-radius: 16rpx;
 }
 
-.upload-btn-icon {
+.upload-btn-icon-text {
   width: 80rpx;
   height: 80rpx;
   margin-bottom: 16rpx;
+  font-size: 60rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .upload-btn-text {
@@ -146,6 +156,13 @@
 .intro-item-icon {
   width: 40rpx;
   height: 40rpx;
+  margin-right: 20rpx;
+  flex-shrink: 0;
+  margin-top: 4rpx;
+}
+
+.intro-item-icon-text {
+  font-size: 32rpx;
   margin-right: 20rpx;
   flex-shrink: 0;
   margin-top: 4rpx;

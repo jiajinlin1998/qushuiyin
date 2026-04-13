@@ -37,12 +37,24 @@
     "disableUseStrict": false,
     "minifyWXML": true,
     "showES6CompileOption": false,
-    "useCompilerPlugins": false
+    "useCompilerPlugins": false,
+    "compileWorklet": false,
+    "localPlugins": false,
+    "condition": false,
+    "swc": false,
+    "disableSWC": true
   },
-  "appid": "touristappid",
+  "appid": "wx40542fb2293a9506",
   "projectname": "watermark-remover",
   "libVersion": "2.25.4",
   "cloudfunctionTemplateRoot": "",
   "condition": {},
-  "description": "去水印微信小程序"
+  "description": "去水印微信小程序",
+  "compileType": "miniprogram",
+  "simulatorPluginLibVersion": {},
+  "packOptions": {
+    "ignore": [],
+    "include": []
+  },
+  "editorSetting": {}
 }

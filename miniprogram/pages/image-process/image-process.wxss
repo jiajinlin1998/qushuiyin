@@ -7,6 +7,17 @@
   min-height: 100vh;
 }
 
+/* 隐藏的处理Canvas */
+.processCanvas {
+  position: fixed;
+  left: -9999px;
+  top: -9999px;
+  width: 300px;
+  height: 300px;
+  pointer-events: none;
+  opacity: 0;
+}
+
 /* 步骤指示器 */
 .step-indicator {
   display: flex;

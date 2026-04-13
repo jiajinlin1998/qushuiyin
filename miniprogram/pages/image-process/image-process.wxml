@@ -1,5 +1,13 @@
 <!--pages/image-process/image-process.wxml-->
 <view class="container">
+  <!-- 隐藏的处理用Canvas -->
+  <canvas 
+    type="2d" 
+    id="processCanvas" 
+    class="processCanvas"
+    style="position: fixed; left: -9999px; top: -9999px; width: 300px; height: 300px;"
+  ></canvas>
+
   <!-- 步骤指示器 -->
   <view class="step-indicator">
     <view class="step {{currentStep >= 1 ? 'active' : ''}}">

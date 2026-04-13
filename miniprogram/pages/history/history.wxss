@@ -21,6 +21,12 @@
   opacity: 0.5;
 }
 
+.empty-icon-text {
+  font-size: 120rpx;
+  margin-bottom: 30rpx;
+  opacity: 0.5;
+}
+
 .empty-text {
   font-size: 32rpx;
   color: #999999;

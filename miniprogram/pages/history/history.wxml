@@ -2,7 +2,7 @@
 <view class="container">
   <!-- 空状态 -->
   <view class="empty-state" wx:if="{{historyList.length === 0}}">
-    <image src="/assets/icons/empty.png" mode="aspectFit" class="empty-icon"></image>
+    <view class="empty-icon-text">📭</view>
     <text class="empty-text">暂无历史记录</text>
     <text class="empty-tip">处理图片后会自动保存到这里</text>
   </view>

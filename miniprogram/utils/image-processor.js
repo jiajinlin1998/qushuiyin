@@ -14,41 +14,49 @@ function processImage(canvas, selections) {
     try {
       // 获取Canvas上下文
       const ctx = canvas.getContext('2d');
-      
-      // 获取Canvas尺寸
+
+      // 获取Canvas尺寸（Canvas 2D API中width/height是物理像素）
       const width = canvas.width;
       const height = canvas.height;
-      
+
+      console.log('开始处理图片，Canvas尺寸:', width, 'x', height);
+      console.log('选择区域数量:', selections.length);
+
       // 获取整个Canvas的像素数据
       const imageData = ctx.getImageData(0, 0, width, height);
       const data = imageData.data;
-      
+
+      console.log('像素数据获取成功，总像素:', data.length / 4);
+
       // 处理每个选择区域
-      selections.forEach(selection => {
+      selections.forEach((selection, index) => {
+        console.log(`处理选择区域 ${index + 1}:`, selection.type);
         if (selection.type === 'rect') {
-          // 处理矩形区域
           processRectangularRegion(data, width, height, selection);
         } else if (selection.type === 'free') {
-          // 处理自由涂抹区域
           processFreeRegion(data, width, height, selection);
         }
       });
-      
+
       // 将处理后的像素写回Canvas
       ctx.putImageData(imageData, 0, 0);
-      
+      console.log('像素处理完成，准备导出');
+
       // 导出为临时文件
       wx.canvasToTempFilePath({
         canvas: canvas,
         success: (res) => {
+          console.log('图片导出成功', res.tempFilePath);
           resolve(res.tempFilePath);
         },
         fail: (err) => {
+          console.error('图片导出失败', err);
           reject(err);
         }
       });
-      
+
     } catch (error) {
+      console.error('图片处理异常', error);
       reject(error);
     }
   });
