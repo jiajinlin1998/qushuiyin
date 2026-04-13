@@ -23,6 +23,8 @@ Page({
    * 支持相册、拍照、微信文件
    */
   chooseImageUpload: function () {
+    const that = this;
+    
     wx.chooseMedia({
       count: 1,
       mediaType: ['image'],
@@ -31,14 +33,47 @@ Page({
       success(res) {
         console.log('选择图片成功', res);
         const tempFilePath = res.tempFiles[0].tempFilePath;
+        const fileSize = res.tempFiles[0].size;
         
-        // 保存到全局数据
-        app.globalData.currentImagePath = tempFilePath;
-        app.globalData.currentProcessType = 'image';
+        // 检查文件大小（限制20MB）
+        if (fileSize > 20 * 1024 * 1024) {
+          wx.showToast({
+            title: '图片大小不能超过20MB',
+            icon: 'error'
+          });
+          return;
+        }
         
-        // 跳转到图片处理页面
-        wx.navigateTo({
-          url: '/pages/image-process/image-process'
+        // 获取图片信息检查尺寸
+        wx.getImageInfo({
+          src: tempFilePath,
+          success: (imgInfo) => {
+            const maxDimension = 4000;
+            if (imgInfo.width > maxDimension || imgInfo.height > maxDimension) {
+              wx.showModal({
+                title: '图片过大',
+                content: `图片尺寸 ${imgInfo.width}x${imgInfo.height} 过大，将自动缩放处理`,
+                showCancel: false
+              });
+            }
+            
+            // 保存到全局数据
+            app.globalData.currentImagePath = tempFilePath;
+            app.globalData.currentProcessType = 'image';
+            
+            // 跳转到图片处理页面
+            wx.navigateTo({
+              url: '/pages/image-process/image-process'
+            });
+          },
+          fail: () => {
+            // 即使获取图片信息失败也继续
+            app.globalData.currentImagePath = tempFilePath;
+            app.globalData.currentProcessType = 'image';
+            wx.navigateTo({
+              url: '/pages/image-process/image-process'
+            });
+          }
         });
       },
       fail(err) {

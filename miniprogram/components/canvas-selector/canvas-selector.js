@@ -13,7 +13,7 @@ Component({
     selectionHistory: []
   },
 
-  // 在 data 之外显式声明所有实例变量（避免 undefined.push 错误）
+  // 显式声明实例变量
   isDrawing: false,
   startX: 0,
   startY: 0,
@@ -29,6 +29,8 @@ Component({
   imageOffsetX: 0,
   imageOffsetY: 0,
   imageLoaded: false,
+  cachedImage: null, // 缓存图片对象，避免重复加载
+  canvasDpr: 1,
 
   lifetimes: {
     ready() {
@@ -68,10 +70,11 @@ Component({
 
           this.canvas = canvas;
           this.ctx = ctx;
+          this.canvasDpr = dpr;
+          // 记录逻辑像素尺寸（CSS像素）
           this.canvasWidth = res[0].width;
           this.canvasHeight = res[0].height;
 
-          // 确保所有变量已初始化
           this.isDrawing = false;
           this.startX = 0;
           this.startY = 0;
@@ -80,10 +83,10 @@ Component({
           this.freeSelections = [];
           this.selectionHistory = [];
           this.imageLoaded = false;
+          this.cachedImage = null;
 
-          console.log('Canvas 初始化完成', this.canvasWidth, this.canvasHeight);
+          console.log('Canvas 初始化完成，逻辑尺寸:', this.canvasWidth, 'x', this.canvasHeight, 'DPR:', dpr);
 
-          // 如果有图片路径，加载图片
           if (this.data.imagePath) {
             this.drawImageToCanvas(this.data.imagePath);
           }
@@ -91,18 +94,24 @@ Component({
     },
 
     /**
-     * 绘制图片到Canvas
+     * 绘制图片到Canvas（优化：缓存图片对象）
      */
     drawImageToCanvas(imagePath) {
       if (!this.ctx || !this.canvas) {
-        console.warn('Canvas 或 ctx 未初始化，跳过绘制');
+        console.warn('Canvas 未初始化');
+        return;
+      }
+
+      // 如果图片路径相同且已缓存，直接重绘
+      if (this.cachedImage && this.cachedImage.src === imagePath) {
+        this.redrawAll();
         return;
       }
 
       const img = this.canvas.createImage();
       
       img.onload = () => {
-        // 计算缩放比例，保持宽高比
+        // 计算缩放比例（基于逻辑像素）
         const scale = Math.min(
           this.canvasWidth / img.width,
           this.canvasHeight / img.height
@@ -113,33 +122,58 @@ Component({
         const offsetX = (this.canvasWidth - drawWidth) / 2;
         const offsetY = (this.canvasHeight - drawHeight) / 2;
 
-        // 清空画布
-        this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
-
-        // 绘制图片
-        this.ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
-
-        // 保存缩放信息
+        // 缓存图片对象和参数
+        this.cachedImage = img;
         this.imageScale = scale;
         this.imageOffsetX = offsetX;
         this.imageOffsetY = offsetY;
+        this.imageDrawWidth = drawWidth;
+        this.imageDrawHeight = drawHeight;
         this.imageLoaded = true;
 
-        console.log('图片加载完成，缩放:', scale.toFixed(3));
+        console.log('图片加载完成，缩放:', scale.toFixed(3), '绘制尺寸:', drawWidth.toFixed(0), 'x', drawHeight.toFixed(0));
 
-        // 重绘已保存的选择区域
-        this.redrawSelections();
+        // 重绘所有内容
+        this.redrawAll();
       };
 
       img.onerror = (err) => {
         console.error('图片加载失败', err);
-        wx.showToast({
-          title: '图片加载失败',
-          icon: 'error'
-        });
+        wx.showToast({ title: '图片加载失败', icon: 'error' });
       };
 
       img.src = imagePath;
+    },
+
+    /**
+     * 重绘所有内容（底图 + 选择区域）
+     */
+    redrawAll() {
+      if (!this.ctx || !this.cachedImage) return;
+
+      // 清空画布（逻辑像素）
+      this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+
+      // 绘制底图（使用缓存的图片）
+      this.ctx.drawImage(
+        this.cachedImage,
+        this.imageOffsetX, this.imageOffsetY,
+        this.imageDrawWidth, this.imageDrawHeight
+      );
+
+      // 绘制选择区域
+      this.redrawSelections();
+    },
+
+    /**
+     * 仅重绘选择区域（不重绘底图）
+     */
+    redrawSelections() {
+      if (!this.ctx) return;
+
+      // 清除之前绘制的选择区域（简单做法：重绘全部）
+      // 优化：可以只清除选择区域部分，但实现复杂
+      this.redrawAll();
     },
 
     /**
@@ -160,9 +194,7 @@ Component({
      * 触摸开始
      */
     onTouchStart(e) {
-      if (!this.imageLoaded) {
-        return;
-      }
+      if (!this.imageLoaded) return;
 
       const touch = e.touches[0];
       this.isDrawing = true;
@@ -185,8 +217,8 @@ Component({
       const touch = e.touches[0];
 
       if (this.data.selectMode === 'rect') {
-        // 矩形模式：实时绘制预览
-        this.redrawCanvas();
+        // 矩形模式：实时预览
+        this.redrawAll();
         this.ctx.strokeStyle = '#4A90E2';
         this.ctx.lineWidth = 2;
         this.ctx.setLineDash([5, 5]);
@@ -198,9 +230,9 @@ Component({
         );
         this.ctx.setLineDash([]);
       } else {
-        // 自由模式：添加路径点
+        // 自由模式
         this.currentPath.push({ x: touch.x, y: touch.y });
-        this.redrawCanvas();
+        this.redrawAll();
         this.drawFreePath(this.currentPath);
       }
     },
@@ -210,7 +242,7 @@ Component({
      */
     onTouchEnd(e) {
       if (!this.isDrawing || !this.imageLoaded) return;
-      
+
       this.isDrawing = false;
       const touch = e.changedTouches[0];
 
@@ -225,56 +257,19 @@ Component({
         if (rect.width > 5 && rect.height > 5) {
           this.rectSelections.push(rect);
           this.saveToHistory();
-          this.redrawCanvas();
+          this.redrawAll();
         }
       } else {
         if (this.currentPath && this.currentPath.length > 2) {
           this.freeSelections.push([...this.currentPath]);
           this.saveToHistory();
-          this.redrawCanvas();
-          this.drawFreePath(this.currentPath);
+          this.redrawAll();
         }
         this.currentPath = [];
       }
 
       const hasSelection = this.rectSelections.length > 0 || this.freeSelections.length > 0;
       this.setData({ hasSelection });
-    },
-
-    /**
-     * 重绘Canvas（图片+所有选择区域）
-     */
-    redrawCanvas() {
-      if (!this.ctx || !this.data.imagePath) return;
-
-      // 清空画布
-      this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
-
-      // 绘制底图
-      this.drawImageToCanvas(this.data.imagePath);
-
-      // 绘制已保存的选择区域（异步加载图片后执行）
-      // 这里使用 redrawSelections 替代
-    },
-
-    /**
-     * 仅重绘选择区域（不重新加载图片）
-     */
-    redrawSelections() {
-      if (!this.ctx) return;
-
-      this.ctx.strokeStyle = '#4A90E2';
-      this.ctx.lineWidth = 2;
-      this.ctx.fillStyle = 'rgba(74, 144, 226, 0.2)';
-
-      this.rectSelections.forEach(rect => {
-        this.ctx.fillRect(rect.x, rect.y, rect.width, rect.height);
-        this.ctx.strokeRect(rect.x, rect.y, rect.width, rect.height);
-      });
-
-      this.freeSelections.forEach(path => {
-        this.drawFreePath(path);
-      });
     },
 
     /**
@@ -307,7 +302,7 @@ Component({
       this.rectSelections = [];
       this.freeSelections = [];
       this.setData({ hasSelection: false });
-      this.redrawCanvas();
+      this.redrawAll();
       this.triggerEvent('selectioncleared');
     },
 
@@ -322,12 +317,12 @@ Component({
 
         const hasSelection = this.rectSelections.length > 0 || this.freeSelections.length > 0;
         this.setData({ hasSelection, selectionHistory: this.selectionHistory });
-        this.redrawCanvas();
+        this.redrawAll();
       }
     },
 
     /**
-     * 保存到历史（用于撤销）
+     * 保存到历史
      */
     saveToHistory() {
       this.selectionHistory.push({
@@ -342,6 +337,7 @@ Component({
      */
     confirmSelection() {
       const selections = this.convertSelectionsToImageCoords();
+      console.log('确认选择，转换后的坐标:', selections);
 
       this.triggerEvent('selectionconfirmed', {
         selections: selections,
@@ -350,7 +346,7 @@ Component({
     },
 
     /**
-     * 将Canvas坐标转换为图片坐标
+     * 将Canvas逻辑坐标转换为图片原始像素坐标
      */
     convertSelectionsToImageCoords() {
       const scale = this.imageScale;
@@ -358,20 +354,30 @@ Component({
       const offsetY = this.imageOffsetY;
       const convertedSelections = [];
 
+      console.log('坐标转换参数:', { scale, offsetX, offsetY });
+
       this.rectSelections.forEach(rect => {
+        // Canvas逻辑坐标 -> 图片原始像素坐标
+        const x = Math.floor((rect.x - offsetX) / scale);
+        const y = Math.floor((rect.y - offsetY) / scale);
+        const w = Math.floor(rect.width / scale);
+        const h = Math.floor(rect.height / scale);
+
+        console.log(`矩形转换: Canvas(${rect.x}, ${rect.y}, ${rect.width}, ${rect.height}) -> 图片(${x}, ${y}, ${w}, ${h})`);
+
         convertedSelections.push({
           type: 'rect',
-          x: Math.floor((rect.x - offsetX) / scale),
-          y: Math.floor((rect.y - offsetY) / scale),
-          width: Math.floor(rect.width / scale),
-          height: Math.floor(rect.height / scale)
+          x: Math.max(0, x),
+          y: Math.max(0, y),
+          width: Math.max(1, w),
+          height: Math.max(1, h)
         });
       });
 
       this.freeSelections.forEach(path => {
         const convertedPath = path.map(point => ({
-          x: Math.floor((point.x - offsetX) / scale),
-          y: Math.floor((point.y - offsetY) / scale)
+          x: Math.max(0, Math.floor((point.x - offsetX) / scale)),
+          y: Math.max(0, Math.floor((point.y - offsetY) / scale))
         }));
         convertedSelections.push({
           type: 'free',
