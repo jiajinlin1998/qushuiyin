@@ -7,9 +7,10 @@
  * 处理图片水印区域
  * @param {Object} canvas - Canvas 2D 对象
  * @param {Array} selections - 选择区域数组
+ * @param {number} dpr - 设备像素比(默认为1)
  * @returns {Promise} - 返回处理后的图片临时文件路径
  */
-function processImage(canvas, selections) {
+function processImage(canvas, selections, dpr = 1) {
   return new Promise((resolve, reject) => {
     try {
       // 获取Canvas上下文
@@ -19,8 +20,9 @@ function processImage(canvas, selections) {
       const width = canvas.width;
       const height = canvas.height;
 
-      console.log('开始处理图片，Canvas尺寸:', width, 'x', height);
+      console.log('开始处理图片，Canvas尺寸(物理像素):', width, 'x', height);
       console.log('选择区域数量:', selections.length);
+      console.log('DPR:', dpr);
 
       // 获取整个Canvas的像素数据
       const imageData = ctx.getImageData(0, 0, width, height);
@@ -28,13 +30,13 @@ function processImage(canvas, selections) {
 
       console.log('像素数据获取成功，总像素:', data.length / 4);
 
-      // 处理每个选择区域
+      // 处理每个选择区域（坐标需要乘以DPR转换为物理像素坐标）
       selections.forEach((selection, index) => {
         console.log(`处理选择区域 ${index + 1}:`, selection.type);
         if (selection.type === 'rect') {
-          processRectangularRegion(data, width, height, selection);
+          processRectangularRegion(data, width, height, selection, dpr);
         } else if (selection.type === 'free') {
-          processFreeRegion(data, width, height, selection);
+          processFreeRegion(data, width, height, selection, dpr);
         }
       });
 
@@ -66,63 +68,81 @@ function processImage(canvas, selections) {
  * 处理矩形水印区域
  * 使用邻域像素平均值填充
  */
-function processRectangularRegion(data, canvasWidth, canvasHeight, rect) {
-  const { x, y, width, height } = rect;
-  
+function processRectangularRegion(data, canvasWidth, canvasHeight, rect, dpr = 1) {
+  // 将逻辑坐标转换为物理像素坐标
+  const x = Math.floor(rect.x * dpr);
+  const y = Math.floor(rect.y * dpr);
+  const width = Math.floor(rect.width * dpr);
+  const height = Math.floor(rect.height * dpr);
+
   // 确保区域在画布范围内
-  const startX = Math.max(0, Math.floor(x));
-  const startY = Math.max(0, Math.floor(y));
-  const endX = Math.min(canvasWidth, Math.floor(x + width));
-  const endY = Math.min(canvasHeight, Math.floor(y + height));
-  
-  // 邻域半径
-  const radius = 5;
-  
+  const startX = Math.max(0, x);
+  const startY = Math.max(0, y);
+  const endX = Math.min(canvasWidth, x + width);
+  const endY = Math.min(canvasHeight, y + height);
+
+  // 邻域半径（也要乘以DPR）
+  const radius = Math.max(5, Math.floor(5 * dpr));
+
+  // 计算处理的像素数量
+  const pixelsToProcess = (endX - startX) * (endY - startY);
+  console.log(`[矩形处理] 原图坐标: (${rect.x}, ${rect.y}, ${rect.width}, ${rect.height})`);
+  console.log(`[矩形处理] 物理坐标: (${x}, ${y}, ${width}, ${height})`);
+  console.log(`[矩形处理] 实际范围: (${startX}, ${startY}) -> (${endX}, ${endY})`);
+  console.log(`[矩形处理] 处理像素数: ${pixelsToProcess}`);
+
   // 遍历水印区域的每个像素
   for (let py = startY; py < endY; py++) {
     for (let px = startX; px < endX; px++) {
       const index = (py * canvasWidth + px) * 4;
-      
+
       // 计算邻域平均颜色
       const avgColor = getNeighborhoodAverage(data, canvasWidth, canvasHeight, px, py, radius);
-      
+
       // 填充平均颜色
-      data[index] = avgColor.r;     // R
-      data[index + 1] = avgColor.g; // G
-      data[index + 2] = avgColor.b; // B
-      // Alpha通道保持不变
+      data[index] = avgColor.r;
+      data[index + 1] = avgColor.g;
+      data[index + 2] = avgColor.b;
     }
   }
+  
+  console.log(`[矩形处理] 完成，共处理 ${pixelsToProcess} 个像素`);
 }
 
 /**
  * 处理自由涂抹水印区域
  */
-function processFreeRegion(data, canvasWidth, canvasHeight, selection) {
+function processFreeRegion(data, canvasWidth, canvasHeight, selection, dpr = 1) {
   const path = selection.path;
   if (!path || path.length < 3) return;
-  
+
+  // 将路径坐标转换为物理像素坐标
+  const scaledPath = path.map(point => ({
+    x: point.x * dpr,
+    y: point.y * dpr
+  }));
+
   // 计算路径的包围盒
   let minX = canvasWidth, minY = canvasHeight, maxX = 0, maxY = 0;
-  path.forEach(point => {
+  scaledPath.forEach(point => {
     minX = Math.min(minX, point.x);
     minY = Math.min(minY, point.y);
     maxX = Math.max(maxX, point.x);
     maxY = Math.max(maxY, point.y);
   });
-  
-  const radius = 5;
-  
+
+  const radius = Math.max(5, Math.floor(5 * dpr));
+
   // 遍历包围盒
   for (let py = Math.max(0, Math.floor(minY)); py <= Math.min(canvasHeight - 1, Math.ceil(maxY)); py++) {
     for (let px = Math.max(0, Math.floor(minX)); px <= Math.min(canvasWidth - 1, Math.ceil(maxX)); px++) {
       // 判断点是否在多边形内
-      if (isPointInPolygon({ x: px, y: py }, path)) {
+      if (isPointInPolygon({ x: px, y: py }, scaledPath)) {
         const index = (py * canvasWidth + px) * 4;
-        
+
         // 计算邻域平均颜色
         const avgColor = getNeighborhoodAverage(data, canvasWidth, canvasHeight, px, py, radius);
-        
+
         // 填充平均颜色
         data[index] = avgColor.r;
         data[index + 1] = avgColor.g;
@@ -138,13 +158,13 @@ function processFreeRegion(data, canvasWidth, canvasHeight, selection) {
  */
 function getNeighborhoodAverage(data, canvasWidth, canvasHeight, centerX, centerY, radius) {
   let totalR = 0, totalG = 0, totalB = 0, count = 0;
-  
+
   // 遍历邻域
   for (let dy = -radius; dy <= radius; dy++) {
     for (let dx = -radius; dx <= radius; dx++) {
       const nx = centerX + dx;
       const ny = centerY + dy;
-      
+
       // 检查边界
       if (nx >= 0 && nx < canvasWidth && ny >= 0 && ny < canvasHeight) {
         // 计算距离（用于加权平均）
@@ -152,7 +172,7 @@ function getNeighborhoodAverage(data, canvasWidth, canvasHeight, centerX, center
         if (distance <= radius) {
           const index = (ny * canvasWidth + nx) * 4;
           const weight = 1 / (distance + 1); // 距离越近权重越高
-          
+
           totalR += data[index] * weight;
           totalG += data[index + 1] * weight;
           totalB += data[index + 2] * weight;
@@ -161,7 +181,7 @@ function getNeighborhoodAverage(data, canvasWidth, canvasHeight, centerX, center
       }
     }
   }
-  
+
   // 计算加权平均
   if (count > 0) {
     return {
@@ -170,7 +190,7 @@ function getNeighborhoodAverage(data, canvasWidth, canvasHeight, centerX, center
       b: Math.round(totalB / count)
     };
   }
-  
+
   return { r: 0, g: 0, b: 0 };
 }
 
@@ -180,17 +200,17 @@ function getNeighborhoodAverage(data, canvasWidth, canvasHeight, centerX, center
 function isPointInPolygon(point, polygon) {
   const { x, y } = point;
   let inside = false;
-  
+
   for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
     const xi = polygon[i].x, yi = polygon[i].y;
     const xj = polygon[j].x, yj = polygon[j].y;
-    
+
     const intersect = ((yi > y) !== (yj > y)) &&
       (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
-    
+
     if (intersect) inside = !inside;
   }
-  
+
   return inside;
 }
 
@@ -204,25 +224,25 @@ function batchProcessImages(imagePaths, selections) {
   return new Promise((resolve, reject) => {
     const results = [];
     let processed = 0;
-    
+
     imagePaths.forEach((imagePath, index) => {
       // 创建离屏Canvas
       const canvas = wx.createOffscreenCanvas({ type: '2d' });
       const ctx = canvas.getContext('2d');
-      
+
       // 加载图片
       const img = canvas.createImage();
       img.onload = () => {
         canvas.width = img.width;
         canvas.height = img.height;
         ctx.drawImage(img, 0, 0);
-        
+
         // 处理图片
         processImage(canvas, selections)
           .then(result => {
             results[index] = result;
             processed++;
-            
+
             if (processed === imagePaths.length) {
               resolve(results);
             }
@@ -231,7 +251,7 @@ function batchProcessImages(imagePaths, selections) {
             reject(err);
           });
       };
-      
+
       img.src = imagePath;
     });
   });

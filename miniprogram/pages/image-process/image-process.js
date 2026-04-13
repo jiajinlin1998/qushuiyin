@@ -156,9 +156,9 @@ Page({
       const img = canvas.createImage();
       img.onload = () => {
         ctx.drawImage(img, 0, 0, imgWidth, imgHeight);
-        
-        // 处理水印（传入canvas对象，内部使用物理像素尺寸）
-        imageProcessor.processImage(canvas, selections)
+
+        // 处理水印（传入canvas对象和DPR，内部使用物理像素尺寸）
+        imageProcessor.processImage(canvas, selections, dpr)
           .then(processedPath => {
             console.log('图片处理完成', processedPath);
             app.globalData.processedImagePath = processedPath;
@@ -230,9 +230,9 @@ Page({
     
     img.onload = () => {
       ctx.drawImage(img, 0, 0, imgWidth, imgHeight);
-      
-      // 处理水印
-      imageProcessor.processImage(canvas, selections)
+
+      // 处理水印（传递DPR参数）
+      imageProcessor.processImage(canvas, selections, dpr)
         .then(processedPath => {
           console.log('图片处理完成（降级方案）', processedPath);
           app.globalData.processedImagePath = processedPath;
